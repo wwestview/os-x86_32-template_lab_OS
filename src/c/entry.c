@@ -69,7 +69,5 @@ void kernel_entry() {
 
     put_cursor(12);
 
-    int a = 10 /0 ;
-
     halt_loop();
 }
