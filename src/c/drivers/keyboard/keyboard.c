@@ -2,7 +2,8 @@
 #include "keyboard.h"
 
 #define KEYBOARD_DATA_PORT 0x60
-#define SCANCODES_KNOWN 89
+#define SCANCODES_KNOWN 120
+#define EXTENDED_SCANCODE_PREFIX 0xE0
 
 // https://wiki.osdev.org/Keyboard#Scan_Code_Set_1
 u8 scancode_to_key[SCANCODES_KNOWN] = {
@@ -101,9 +102,21 @@ char key_to_character[SCANCODES_KNOWN];
 
 void (*custom_key_handler)(struct keyboard_event event) = 0;
 
+// Extended scancode handling
+static bool extended_scancode = false;
+static bool shift_pressed = false;
+static bool caps_lock = false;
+
 /* Handles the keyboard interrupt */
 void keyboard_handler(__attribute__((unused)) u32 interrupt) {
     const u8 scancode = in(KEYBOARD_DATA_PORT);
+    
+    // Check for extended scancode prefix
+    if (scancode == EXTENDED_SCANCODE_PREFIX) {
+        extended_scancode = true;
+        return;
+    }
+    
     if (custom_key_handler != 0) {
         // 0x80 bit says it's released, otherwise it's pressed
         enum key_event_type event_type;
@@ -115,13 +128,93 @@ void keyboard_handler(__attribute__((unused)) u32 interrupt) {
 
         // cut the event bit (allows to use a single table for keys)
         const u8 bare_scancode = scancode & (0x80 - 1);
-        if (bare_scancode < SCANCODES_KNOWN) {
-            struct keyboard_event event;
-            event.type = event_type;
-            event.key  = scancode_to_key[bare_scancode];
-            event.key_character = key_to_character[event.key];
-            custom_key_handler(event);
+        
+        struct keyboard_event event;
+        event.type = event_type;
+        
+        // Handle extended scancodes (arrow keys)
+        if (extended_scancode) {
+            extended_scancode = false;
+            switch (bare_scancode) {
+                case 0x48: // Up arrow
+                    event.key = KEY_UP;
+                    event.key_character = 0;
+                    break;
+                case 0x50: // Down arrow
+                    event.key = KEY_DOWN;
+                    event.key_character = 0;
+                    break;
+                case 0x4B: // Left arrow
+                    event.key = KEY_LEFT;
+                    event.key_character = 0;
+                    break;
+                case 0x4D: // Right arrow
+                    event.key = KEY_RIGHT;
+                    event.key_character = 0;
+                    break;
+                case 0x49: // Page Up
+                    event.key = KEY_PAGE_UP;
+                    event.key_character = 0;
+                    break;
+                case 0x51: // Page Down
+                    event.key = KEY_PAGE_DOWN;
+                    event.key_character = 0;
+                    break;
+                default:
+                    return; // Unknown extended scancode
+            }
+        } else {
+            // Handle regular scancodes
+            if (bare_scancode < SCANCODES_KNOWN) {
+                event.key = scancode_to_key[bare_scancode];
+                
+                // Handle special keys
+                if (event.key == KEY_LEFT_SHIFT || event.key == KEY_RIGHT_SHIFT) {
+                    shift_pressed = (event_type == EVENT_KEY_PRESSED);
+                    return; // Don't send shift events to handler
+                }
+                
+                if (event.key == KEY_CAPSLOCK && event_type == EVENT_KEY_PRESSED) {
+                    caps_lock = !caps_lock;
+                    return; // Don't send caps lock events to handler
+                }
+                
+                // Get character with case handling
+                char base_char = key_to_character[event.key];
+                if (base_char >= 'a' && base_char <= 'z') {
+                    if (shift_pressed ^ caps_lock) {
+                        event.key_character = base_char - 32; // Convert to uppercase
+                    } else {
+                        event.key_character = base_char;
+                    }
+                } else if (base_char >= '1' && base_char <= '9') {
+                    // Handle number keys with shift
+                    if (shift_pressed) {
+                        switch (base_char) {
+                            case '1': event.key_character = '!'; break;
+                            case '2': event.key_character = '@'; break;
+                            case '3': event.key_character = '#'; break;
+                            case '4': event.key_character = '$'; break;
+                            case '5': event.key_character = '%'; break;
+                            case '6': event.key_character = '^'; break;
+                            case '7': event.key_character = '&'; break;
+                            case '8': event.key_character = '*'; break;
+                            case '9': event.key_character = '('; break;
+                            case '0': event.key_character = ')'; break;
+                            default: event.key_character = base_char; break;
+                        }
+                    } else {
+                        event.key_character = base_char;
+                    }
+                } else {
+                    event.key_character = base_char;
+                }
+            } else {
+                return; // Unknown scancode
+            }
         }
+        
+        custom_key_handler(event);
     }
 }
 

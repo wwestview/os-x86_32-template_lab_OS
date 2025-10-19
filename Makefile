@@ -10,7 +10,14 @@ SRC_C   := \
 	src/c/kernel/interrupt_handler.c \
 	src/c/drivers/keyboard/keyboard.c \
 	src/c/drivers/timer/timer.c \
-	src/c/drivers/serial_port/serial_port.c
+	src/c/drivers/serial_port/serial_port.c \
+	src/c/drivers/vga/vga.c \
+	src/c/filesystem/filesystem.c \
+	src/c/editor/editor.c \
+	src/c/command_editor/command_editor.c \
+	src/c/screensaver/screensaver.c \
+	src/c/shell/shell.c \
+	src/c/shell/commands.c
 
 OBJ_ASM := $(patsubst src/asm/%.asm, build/asm/%.o, $(SRC_ASM))
 OBJ_C   := $(patsubst %.c, build/kernel/%.o, $(SRC_C))
@@ -30,7 +37,7 @@ build/asm/%.o: src/asm/%.asm
 build/kernel/%.o: %.c
 	@echo "Compiling $<..."
 	@mkdir -p $(@D)
-	gcc -ffreestanding -m32 -fno-pie -Wall -Wextra -c $< -o $@
+	gcc -ffreestanding -m32 -fno-pie -Wall -Wextra -Isrc/c -c $< -o $@
 
 clean:
 	rm -rf build

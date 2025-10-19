@@ -2,6 +2,10 @@
 #include "drivers/keyboard/keyboard.h"
 #include "drivers/timer/timer.h"
 #include "drivers/serial_port/serial_port.h"
+#include "drivers/vga/vga.h"
+#include "shell/shell.h"
+#include "shell/commands.h"
+#include "screensaver/screensaver.h"
 
 void exception_handler(u32 interrupt, u32 error, char *message) {
     serial_log(LOG_ERROR, message);
@@ -39,13 +43,11 @@ _Noreturn void halt_loop() {
 }
 
 void key_handler(struct keyboard_event event) {
-    if (event.key_character && event.type == EVENT_KEY_PRESSED) {
-        // process key press event
-    }
+    shell_handle_keyboard(event);
 }
 
 void timer_tick_handler() {
-    // do something when timer ticks
+    screensaver_timer_tick();
 }
 
 /**
@@ -56,18 +58,12 @@ void kernel_entry() {
     keyboard_set_handler(key_handler);
     timer_set_handler(timer_tick_handler);
 
-    // demo of printing hello world to screen using framebuffer
-    char *message = "Hello world!";
-    char *framebuffer = (char *) 0xb8000;
-
-    while (*message != '\0') {
-        *framebuffer = *message;
-        *(framebuffer + 1) = (0xd << 4) | 0xb;
-        framebuffer += 2;
-        message++;
-    }
-
-    put_cursor(12);
-
+    // Initialize shell system
+    shell_init();
+    commands_init();
+    
+    // Start shell
+    shell_run();
+    
     halt_loop();
 }

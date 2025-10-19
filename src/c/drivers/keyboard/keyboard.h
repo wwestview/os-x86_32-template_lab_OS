@@ -86,7 +86,13 @@ enum key {
     KEY_KEYPAD_0,
     KEY_KEYPAD_DOT,
     KEY_F11,
-    KEY_F12
+    KEY_F12,
+    KEY_UP,
+    KEY_DOWN,
+    KEY_LEFT,
+    KEY_RIGHT,
+    KEY_PAGE_UP,
+    KEY_PAGE_DOWN
 };
 
 enum key_event_type {
