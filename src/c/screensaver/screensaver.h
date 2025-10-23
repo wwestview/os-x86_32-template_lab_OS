@@ -9,9 +9,7 @@ struct keyboard_event;
 
 // Screensaver types
 typedef enum {
-    SCREENSAVER_BOUNCING_BALL,
-    SCREENSAVER_FALLING_STARS,
-    SCREENSAVER_MATRIX_RAIN,
+    SCREENSAVER_SPACE_BATTLE,
     SCREENSAVER_COUNT
 } screensaver_type_t;
 
@@ -22,19 +20,38 @@ typedef struct {
     u32 animation_frame;
     u32 last_timer_tick;
     
-    // Animation data
-    u16 ball_x, ball_y;
-    u16 ball_dx, ball_dy;
+    // Space battle data
+    u16 spaceship_x, spaceship_y;
+    u16 spaceship_direction; // 0=right, 1=left
     
-    // Matrix rain data
-    char matrix_chars[80];
-    u16 matrix_positions[80];
-    u8 matrix_speeds[80];
+    // Asteroids
+    u16 asteroid_x[15];
+    u16 asteroid_y[15];
+    u8 asteroid_type[15]; // 0=small, 1=medium, 2=large
+    u8 asteroid_speed[15];
+    bool asteroid_active[15];
     
-    // Stars data
-    u16 star_x[20];
-    u16 star_y[20];
-    u8 star_speed[20];
+    // Lasers
+    u16 laser_x[10];
+    u16 laser_y[10];
+    bool laser_active[10];
+    u8 laser_frame[10];
+    
+    // Explosions
+    u16 explosion_x[8];
+    u16 explosion_y[8];
+    u8 explosion_frame[8];
+    bool explosion_active[8];
+    
+    // Stars background
+    u16 star_x[50];
+    u16 star_y[50];
+    u8 star_brightness[50];
+    
+    // Score and game state
+    u32 score;
+    u16 lives;
+    bool game_over;
 } screensaver_state_t;
 
 // Initialize screensaver
@@ -57,6 +74,12 @@ void screensaver_draw();
 
 // Check if screensaver is active
 bool screensaver_is_active();
+
+// Check for inactivity and auto-start screensaver
+void screensaver_check_inactivity();
+
+// Reset inactivity timer
+void screensaver_reset_timer();
 
 // Get screensaver state
 screensaver_state_t* screensaver_get_state();

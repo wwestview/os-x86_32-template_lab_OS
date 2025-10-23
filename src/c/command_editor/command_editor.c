@@ -28,11 +28,11 @@ void cmd_editor_init() {
     cmd_editor_state.command_count = 0;
     cmd_editor_state.selected_command = 0;
     cmd_editor_state.start_display = 0;
-    cmd_editor_state.max_visible_commands = 15; // Show 15 commands at once
+    cmd_editor_state.max_visible_commands = 15;
     cmd_editor_state.is_active = false;
     cmd_editor_state.show_examples = false;
     
-    // Initialize all commands
+    // Initialize allowed commands
     str_copy(cmd_editor_state.commands[0].name, "help");
     str_copy(cmd_editor_state.commands[0].description, "Show help message");
     str_copy(cmd_editor_state.commands[0].example, "help");
@@ -43,77 +43,37 @@ void cmd_editor_init() {
     str_copy(cmd_editor_state.commands[1].example, "clear");
     cmd_editor_state.commands[1].is_file_command = false;
     
-    str_copy(cmd_editor_state.commands[2].name, "echo");
-    str_copy(cmd_editor_state.commands[2].description, "Print text to screen");
-    str_copy(cmd_editor_state.commands[2].example, "echo Hello World");
+    str_copy(cmd_editor_state.commands[2].name, "screensaver");
+    str_copy(cmd_editor_state.commands[2].description, "Start the screensaver");
+    str_copy(cmd_editor_state.commands[2].example, "screensaver");
     cmd_editor_state.commands[2].is_file_command = false;
     
-    str_copy(cmd_editor_state.commands[3].name, "list");
-    str_copy(cmd_editor_state.commands[3].description, "List files in memory");
-    str_copy(cmd_editor_state.commands[3].example, "list");
+    str_copy(cmd_editor_state.commands[3].name, "create");
+    str_copy(cmd_editor_state.commands[3].description, "Create a new file");
+    str_copy(cmd_editor_state.commands[3].example, "create <name>");
     cmd_editor_state.commands[3].is_file_command = true;
     
-    str_copy(cmd_editor_state.commands[4].name, "create");
-    str_copy(cmd_editor_state.commands[4].description, "Create a new file");
-    str_copy(cmd_editor_state.commands[4].example, "create myfile.txt");
+    str_copy(cmd_editor_state.commands[4].name, "edit");
+    str_copy(cmd_editor_state.commands[4].description, "Edit an existing file");
+    str_copy(cmd_editor_state.commands[4].example, "edit <name>");
     cmd_editor_state.commands[4].is_file_command = true;
     
-    str_copy(cmd_editor_state.commands[5].name, "delete");
-    str_copy(cmd_editor_state.commands[5].description, "Delete a file");
-    str_copy(cmd_editor_state.commands[5].example, "delete myfile.txt");
+    str_copy(cmd_editor_state.commands[5].name, "list");
+    str_copy(cmd_editor_state.commands[5].description, "List all files in system");
+    str_copy(cmd_editor_state.commands[5].example, "list");
     cmd_editor_state.commands[5].is_file_command = true;
     
-    str_copy(cmd_editor_state.commands[6].name, "view");
-    str_copy(cmd_editor_state.commands[6].description, "View file content");
-    str_copy(cmd_editor_state.commands[6].example, "view myfile.txt");
+    str_copy(cmd_editor_state.commands[6].name, "read");
+    str_copy(cmd_editor_state.commands[6].description, "Read a file's content");
+    str_copy(cmd_editor_state.commands[6].example, "read <name>");
     cmd_editor_state.commands[6].is_file_command = true;
     
-    str_copy(cmd_editor_state.commands[7].name, "write");
-    str_copy(cmd_editor_state.commands[7].description, "Write content to file");
-    str_copy(cmd_editor_state.commands[7].example, "write myfile.txt Hello World");
+    str_copy(cmd_editor_state.commands[7].name, "delete");
+    str_copy(cmd_editor_state.commands[7].description, "Delete a file");
+    str_copy(cmd_editor_state.commands[7].example, "delete <name>");
     cmd_editor_state.commands[7].is_file_command = true;
     
-    str_copy(cmd_editor_state.commands[8].name, "append");
-    str_copy(cmd_editor_state.commands[8].description, "Append content to file");
-    str_copy(cmd_editor_state.commands[8].example, "append myfile.txt More text");
-    cmd_editor_state.commands[8].is_file_command = true;
-    
-    str_copy(cmd_editor_state.commands[9].name, "insert");
-    str_copy(cmd_editor_state.commands[9].description, "Insert content at position");
-    str_copy(cmd_editor_state.commands[9].example, "insert myfile.txt 5 new");
-    cmd_editor_state.commands[9].is_file_command = true;
-    
-    str_copy(cmd_editor_state.commands[10].name, "del");
-    str_copy(cmd_editor_state.commands[10].description, "Delete content from position");
-    str_copy(cmd_editor_state.commands[10].example, "del myfile.txt 0 5");
-    cmd_editor_state.commands[10].is_file_command = true;
-    
-    str_copy(cmd_editor_state.commands[11].name, "replace");
-    str_copy(cmd_editor_state.commands[11].description, "Replace text in file");
-    str_copy(cmd_editor_state.commands[11].example, "replace myfile.txt old new");
-    cmd_editor_state.commands[11].is_file_command = true;
-    
-    str_copy(cmd_editor_state.commands[12].name, "size");
-    str_copy(cmd_editor_state.commands[12].description, "Show file size");
-    str_copy(cmd_editor_state.commands[12].example, "size myfile.txt");
-    cmd_editor_state.commands[12].is_file_command = true;
-    
-    str_copy(cmd_editor_state.commands[13].name, "clearfile");
-    str_copy(cmd_editor_state.commands[13].description, "Clear file content");
-    str_copy(cmd_editor_state.commands[13].example, "clearfile myfile.txt");
-    cmd_editor_state.commands[13].is_file_command = true;
-    
-    str_copy(cmd_editor_state.commands[14].name, "info");
-    str_copy(cmd_editor_state.commands[14].description, "Show system information");
-    str_copy(cmd_editor_state.commands[14].example, "info");
-    cmd_editor_state.commands[14].is_file_command = false;
-    
-    str_copy(cmd_editor_state.commands[15].name, "version");
-    str_copy(cmd_editor_state.commands[15].description, "Show OS version");
-    str_copy(cmd_editor_state.commands[15].example, "version");
-    cmd_editor_state.commands[15].is_file_command = false;
-    
-    cmd_editor_state.command_count = 16;
+    cmd_editor_state.command_count = 8;
 }
 
 void cmd_editor_start() {
@@ -371,6 +331,9 @@ void cmd_editor_exit() {
     cmd_editor_state.is_active = false;
     vga_clear();
     vga_print_color("Command editor closed.\n", VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK);
+    vga_print_color("shell> ", VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK);
+    // Set flag to indicate we just exited interactive mode
+    shell_get_state()->just_exited_interactive = true;
 }
 
 bool cmd_editor_is_active() {

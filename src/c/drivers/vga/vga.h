@@ -53,6 +53,12 @@ void vga_set_cursor(u8 x, u8 y);
 // Get cursor position
 cursor_pos_t vga_get_cursor();
 
+// Disable hardware cursor
+void vga_disable_cursor();
+
+// Enable hardware cursor
+void vga_enable_cursor(u8 start_line, u8 end_line);
+
 // Print character at current cursor position
 void vga_putchar(char c);
 

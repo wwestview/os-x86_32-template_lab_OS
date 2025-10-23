@@ -11,8 +11,7 @@
 #define SHELL_MAX_INPUT_LENGTH 256
 #define SHELL_MAX_COMMAND_LENGTH 64
 #define SHELL_MAX_ARGS 16
-#define SHELL_HISTORY_LINES 100
-#define SHELL_SCREEN_LINES 25
+
 
 // Shell state
 typedef struct {
@@ -21,11 +20,8 @@ typedef struct {
     u16 cursor_position;
     bool is_running;
     
-    // Scroll buffer for history
-    char history_buffer[SHELL_HISTORY_LINES][VGA_WIDTH];
-    u8 history_count;
-    u8 scroll_offset;
-    bool scroll_mode;
+    // Flag to track if we just exited an interactive mode
+    bool just_exited_interactive;
 } shell_state_t;
 
 // Command structure
@@ -52,6 +48,13 @@ void shell_register_command(const char* name, void (*handler)(const char* args),
 
 // Print shell prompt
 void shell_print_prompt();
+
+// Scroll screen up by one line
+void shell_scroll_up();
+
+// Check if we need to scroll and do it automatically
+void shell_check_and_scroll();
+
 
 // Print error message
 void shell_print_error(const char* message);

@@ -156,3 +156,15 @@ void vga_set_color(u8 fg_color, u8 bg_color) {
 u8 vga_get_color() {
     return current_color;
 }
+
+void vga_disable_cursor() {
+    out(0x3D4, 0x0A);
+    out(0x3D5, 0x20); // Set cursor start to 32 (disable cursor)
+}
+
+void vga_enable_cursor(u8 start_line, u8 end_line) {
+    out(0x3D4, 0x0A);
+    out(0x3D5, (start_line & 0x0F) | 0x20); // Set cursor start
+    out(0x3D4, 0x0B);
+    out(0x3D5, (end_line & 0x0F) | 0x20);   // Set cursor end
+}

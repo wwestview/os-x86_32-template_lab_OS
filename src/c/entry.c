@@ -6,6 +6,7 @@
 #include "shell/shell.h"
 #include "shell/commands.h"
 #include "screensaver/screensaver.h"
+#include "memory/memory.h"
 
 void exception_handler(u32 interrupt, u32 error, char *message) {
     serial_log(LOG_ERROR, message);
@@ -48,6 +49,7 @@ void key_handler(struct keyboard_event event) {
 
 void timer_tick_handler() {
     screensaver_timer_tick();
+    screensaver_check_inactivity();
 }
 
 /**
@@ -58,6 +60,9 @@ void kernel_entry() {
     keyboard_set_handler(key_handler);
     timer_set_handler(timer_tick_handler);
 
+    // Initialize memory manager (heap starts at 1MB, size 512KB)
+    memory_init(0x100000, 0x80000);
+    
     // Initialize shell system
     shell_init();
     commands_init();

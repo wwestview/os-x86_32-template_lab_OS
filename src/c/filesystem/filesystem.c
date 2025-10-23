@@ -1,5 +1,6 @@
 #include "filesystem/filesystem.h"
 #include "drivers/vga/vga.h"
+#include "shell/shell.h"
 
 static filesystem_t filesystem;
 
@@ -72,6 +73,7 @@ bool fs_create_file(const char* filename) {
             filesystem.files[i].exists = true;
             filesystem.files[i].content[0] = '\0';
             filesystem.files[i].content_length = 0;
+            filesystem.files[i].is_read_only = false;
             filesystem.file_count++;
             return true;
         }
@@ -113,10 +115,8 @@ file_t* fs_get_file(const char* filename) {
 }
 
 void fs_list_files() {
-    vga_newline();
     vga_print_color("Files in memory:\n", VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK);
     vga_print_color("===============\n", VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK);
-    
     if (filesystem.file_count == 0) {
         vga_print_color("No files found.\n", VGA_COLOR_LIGHT_CYAN, VGA_COLOR_BLACK);
         return;
@@ -124,7 +124,7 @@ void fs_list_files() {
     
     for (u8 i = 0; i < MAX_FILES; i++) {
         if (filesystem.files[i].exists) {
-            vga_print_color("  ", VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+            vga_print_color(" ", VGA_COLOR_WHITE, VGA_COLOR_BLACK);
             vga_print(filesystem.files[i].name);
             vga_print_color(" (", VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
             // Print file size
@@ -150,7 +150,6 @@ void fs_list_files() {
             vga_print_color(" chars)\n", VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
         }
     }
-    vga_newline();
 }
 
 bool fs_write_file(const char* filename, const char* content) {

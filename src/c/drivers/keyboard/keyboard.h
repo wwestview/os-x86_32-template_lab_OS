@@ -92,7 +92,9 @@ enum key {
     KEY_LEFT,
     KEY_RIGHT,
     KEY_PAGE_UP,
-    KEY_PAGE_DOWN
+    KEY_PAGE_DOWN,
+    KEY_DELETE,
+    KEY_CTRL_S
 };
 
 enum key_event_type {

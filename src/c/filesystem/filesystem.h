@@ -15,6 +15,7 @@ typedef struct {
     char content[MAX_FILE_SIZE];
     u16 content_length;
     bool exists;
+    bool is_read_only;
 } file_t;
 
 // File system structure

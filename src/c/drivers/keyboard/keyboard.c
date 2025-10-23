@@ -106,6 +106,7 @@ void (*custom_key_handler)(struct keyboard_event event) = 0;
 static bool extended_scancode = false;
 static bool shift_pressed = false;
 static bool caps_lock = false;
+static bool ctrl_pressed = false;
 
 /* Handles the keyboard interrupt */
 void keyboard_handler(__attribute__((unused)) u32 interrupt) {
@@ -160,6 +161,10 @@ void keyboard_handler(__attribute__((unused)) u32 interrupt) {
                     event.key = KEY_PAGE_DOWN;
                     event.key_character = 0;
                     break;
+                case 0x53: // Delete
+                    event.key = KEY_DELETE;
+                    event.key_character = 0;
+                    break;
                 default:
                     return; // Unknown extended scancode
             }
@@ -174,9 +179,22 @@ void keyboard_handler(__attribute__((unused)) u32 interrupt) {
                     return; // Don't send shift events to handler
                 }
                 
+                if (event.key == KEY_LEFT_CONTROL) {
+                    ctrl_pressed = (event_type == EVENT_KEY_PRESSED);
+                    return; // Don't send ctrl events to handler
+                }
+                
                 if (event.key == KEY_CAPSLOCK && event_type == EVENT_KEY_PRESSED) {
                     caps_lock = !caps_lock;
                     return; // Don't send caps lock events to handler
+                }
+                
+                // Handle Ctrl+S combination
+                if (ctrl_pressed && event.key == KEY_S && event_type == EVENT_KEY_PRESSED) {
+                    event.key = KEY_CTRL_S;
+                    event.key_character = 0;
+                    custom_key_handler(event);
+                    return;
                 }
                 
                 // Get character with case handling
