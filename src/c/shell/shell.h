@@ -5,7 +5,6 @@
 #include "drivers/vga/vga.h"
 #include "drivers/keyboard/keyboard.h"
 #include "editor/editor.h"
-#include "command_editor/command_editor.h"
 #include "screensaver/screensaver.h"
 
 #define SHELL_MAX_INPUT_LENGTH 256

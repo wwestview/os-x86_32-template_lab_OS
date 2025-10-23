@@ -3,7 +3,7 @@
 #include "drivers/vga/vga.h"
 #include "filesystem/filesystem.h"
 #include "editor/editor.h"
-#include "command_editor/command_editor.h"
+// command_editor removed — no include
 
 
 void cmd_help(const char* args) {

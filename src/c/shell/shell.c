@@ -2,7 +2,6 @@
 #include "shell/commands.h"
 #include "drivers/vga/vga.h"
 #include "filesystem/filesystem.h"
-#include "command_editor/command_editor.h"
 #include "screensaver/screensaver.h"
 
 static shell_state_t shell_state;
@@ -32,7 +31,6 @@ void shell_init() {
     vga_init();
     fs_init();
     editor_init();
-    cmd_editor_init();
     screensaver_init();
     vga_clear();
     vga_print_color("OS Shell v2.0\n", VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK);
@@ -46,14 +44,13 @@ void shell_handle_keyboard(struct keyboard_event event) {
     screensaver_reset_timer();
     if (shell_state.just_exited_interactive) { shell_state.just_exited_interactive = false; return; }
     if (screensaver_is_active()) { screensaver_handle_keyboard(event); return; }
-    if (cmd_editor_is_active()) { cmd_editor_handle_keyboard(event); return; }
     if (editor_is_active()) { editor_handle_keyboard(event); return; }
     if (event.type != EVENT_KEY_PRESSED) return;
     char c = event.key_character;
     // History display removed; direct input handling continues.
     if (c == '\n') {
         vga_newline(); shell_process_command();
-        if (!editor_is_active() && !cmd_editor_is_active() && !screensaver_is_active()) shell_print_prompt();
+    if (!editor_is_active() && !screensaver_is_active()) shell_print_prompt();
         return;
     }
     if (c == '\b') {

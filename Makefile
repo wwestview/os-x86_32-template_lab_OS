@@ -14,7 +14,6 @@ SRC_C   := \
 	src/c/drivers/vga/vga.c \
 	src/c/filesystem/filesystem.c \
 	src/c/editor/editor.c \
-	src/c/command_editor/command_editor.c \
 	src/c/screensaver/screensaver.c \
 	src/c/shell/shell.c \
 	src/c/shell/commands.c \
